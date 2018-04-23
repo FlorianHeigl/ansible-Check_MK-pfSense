@@ -1,0 +1,9 @@
+---
+
+
+- name: load ipmi module
+  ignore_errors: yes
+  command: kldload ipmi.ko
+
+- name: install libstatgrab
+  command: pkg add /opt/check_mk/libstatgrab-0.91.txz

@@ -1,0 +1,60 @@
+
+---
+
+# losely after https://forum.pfsense.org/index.php?topic=111517.0
+
+
+- name: dependencies
+  pkgng: name=bash state=present
+
+
+- name: config dirs
+  file: path={{ item }} state=directory
+  with_items: ['/opt/check_mk/bin', '/opt/check_mk/etc/xinetd.d' ]
+- name: extension dirs
+  file: path={{ item }} state=directory
+  with_items: ['/opt/check_mk/lib/plugins', '/opt/check_mk/lib/local/3600', '/opt/check_mk/lib/plugins/3600' ]
+
+
+# plugin fuer updates mit 3600 subdir
+- name: update checker
+  copy: src=pfsense-updates.php dest=/opt/check_mk/lib/local/3600 mode=0755 owner=root group=wheel
+
+# ipmitool
+- name: ipmi support software
+  pkgng: name={{ item }} state=present
+  with_items:
+    - ipmitool
+    - openipmi
+# when: hardware?
+
+# kldload ipmi
+- name: enable loading of ipmi module
+  lineinfile:
+    line: 'ipmi_load="YES"'
+    regexp: '^ipmi_load='
+    dest: /boot/loader.conf.local
+    create: true
+  notify: load ipmi module
+# when: hardware?
+
+# fetch agent http://git.mathias-kettner.de/git/?p=check_mk.git;a=blob_plain;f=agents/check_mk_agent.freebsd;hb=HEAD
+# paths are adjusted to look a bit more like unix
+- name: check_mk_agent
+  copy: src=check_mk_agent.freebsd dest=/opt/check_mk/bin/check_mk_agent mode=0755 owner=root group=wheel
+
+# fetch http://pkg.freebsd.org/FreeBSD:11:amd64/latest/All/libstatgrab-0.91.txz && pkg install libstatgrab-0.91.txz
+- name: libstatgrab (amd64)
+  copy: src=libstatgrab-0.91.txz dest=/opt/check_mk/libstatgrab-0.91.txz mode=0755 owner=root group=wheel
+  notify: install libstatgrab
+
+
+- name: xinetd config
+  copy: src=check_mk.inet   dest=/opt/check_mk/etc/xinetd.d/check_mk mode=0755 owner=root group=wheel
+  
+# patchen der filter.inc datei automatisieren?
+#- name: persistent xinetd config path helper script
+#  copy: src=patch-inc-php.sh dest=/opt/check_mk/bin/patch-inc-php.sh mode=0755 owner=root group=wheel
+
+- name: persistent xinetd config check
+  script: patch-inc-php.sh

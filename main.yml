@@ -1,0 +1,9 @@
+---
+
+
+- name: Check_MK agent config
+  hosts: all
+  user: root
+
+  roles: 
+    - check_mk-pfsense
