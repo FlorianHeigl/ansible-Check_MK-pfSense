@@ -13,12 +13,15 @@
   with_items: ['/opt/check_mk/bin', '/opt/check_mk/etc/xinetd.d' ]
 - name: extension dirs
   file: path={{ item }} state=directory
-  with_items: ['/opt/check_mk/lib/plugins', '/opt/check_mk/lib/local/3600', '/opt/check_mk/lib/plugins/3600' ]
+  with_items: ['/opt/check_mk/lib/local/3600', '/opt/check_mk/lib/plugins/3600' ]
 
 
 # plugin fuer updates mit 3600 subdir
 - name: update checker
-  copy: src=pfsense-updates.php dest=/opt/check_mk/lib/local/3600 mode=0755 owner=root group=wheel
+  copy: src=pfsense-updates.php dest=/opt/check_mk/lib/local/3600/pfsense-updates.php mode=0755 owner=root group=wheel
+
+- name: squidclient checker
+  copy: src=squidclient dest=/opt/check_mk/lib/plugins/squidclient mode=0755 owner=root group=wheel
 
 # ipmitool
 - name: ipmi support software
