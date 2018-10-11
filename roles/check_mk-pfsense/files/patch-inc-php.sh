@@ -11,7 +11,7 @@ SRCFILE=/etc/inc/filter.inc
 
 edit_missing_include() {
     echo "config replaced"
-    awk '/Close file handle/{print "        fwrite($xinetd_fd, \"includedir /opt/etc/xinetd.d\");"}1' \
+    awk '/Close file handle/{print "        fwrite($xinetd_fd, \"includedir /opt/check_mk/etc/xinetd.d\");"}1' \
         $SRCFILE > $TMPFILE
     return $?
 }
