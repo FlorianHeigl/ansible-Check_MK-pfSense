@@ -36,6 +36,13 @@ We set up ignore rules for some services
 
 ## Notes
 
+### no python2 interpreter symlink in 2.4.4 and up.
+
+Newer versions seem to not have a "default" python2. you can either change the setting in your inventory from
+'python2' to 'python2.7' or create a symlink.
+
+
+
 ### Connections
 
 A connection using sshpass (-k) turned out to be extremely flaky.
