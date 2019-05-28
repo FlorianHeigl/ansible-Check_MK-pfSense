@@ -1,3 +1,8 @@
+
+
+# new upstream: 
+https://github.com/deepthinkag/ansible-Check_MK-pfSense
+
 # Ansible Playbook for setting up Check_MK agent on pfSense
 
 Automatically installs the Check_MK agent on a pfSense firewall.
