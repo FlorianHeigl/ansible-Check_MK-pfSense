@@ -23,6 +23,10 @@
 - name: squidclient checker
   copy: src=squidclient dest=/opt/check_mk/lib/plugins/squidclient mode=0755 owner=root group=wheel
 
+- name: haproxy checker
+  copy: src=mk_haproxy dest=/opt/check_mk/lib/plugins/mk_haproxy mode=0755 owner=root group=wheel
+
+
 # ipmitool
 - name: ipmi support software
   pkgng: name={{ item }} state=present
