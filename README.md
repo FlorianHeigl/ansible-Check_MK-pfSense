@@ -45,8 +45,8 @@ Newer versions seem to not have a "default" python2. you can either change the s
 
 ### Connections
 
-A connection using sshpass (-k) turned out to be extremely flaky.
-You are very much advised to store a key for connecting with Ansible.
+Once the connection using sshpass (-k) turned out to be extremely flaky.
+IF that happens, you are advised to store a key for connecting with Ansible.
 
 We normally also prefer to connect via SSH for Check_MK, that part is your choice. You can just disable the xinetd listener in that case.
 That's using ```disable = yes``` in ```./roles/check_mk-pfsense/files/check_mk.inet```
