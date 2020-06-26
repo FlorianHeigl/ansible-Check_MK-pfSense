@@ -44,26 +44,6 @@
 # when: hardware?
 
 # fetch agent http://git.mathias-kettner.de/git/?p=check_mk.git;a=blob_plain;f=agents/check_mk_agent.freebsd;hb=HEAD
-
-# ipmitool
-- name: ipmi support software
-  pkgng: name={{ item }} state=present
-  with_items:
-    - ipmitool
-    - openipmi
-# when: hardware?
-
-# kldload ipmi
-- name: enable loading of ipmi module
-  lineinfile:
-    line: 'ipmi_load="YES"'
-    regexp: '^ipmi_load='
-    dest: /boot/loader.conf.local
-    create: true
-  notify: load ipmi module
-# when: hardware?
-
-# fetch agent http://git.mathias-kettner.de/git/?p=check_mk.git;a=blob_plain;f=agents/check_mk_agent.freebsd;hb=HEAD
 # paths are adjusted to look a bit more like unix
 - name: check_mk_agent
   copy: src=check_mk_agent.freebsd dest=/opt/check_mk/bin/check_mk_agent mode=0755 owner=root group=wheel
@@ -73,13 +53,18 @@
   copy: src=libstatgrab-0.91.txz dest=/opt/check_mk/libstatgrab-0.91.txz mode=0755 owner=root group=wheel
   notify: install libstatgrab
 
-
 - name: xinetd config
   copy: src=check_mk.inet   dest=/opt/check_mk/etc/xinetd.d/check_mk mode=0755 owner=root group=wheel
-  
+
 # patchen der filter.inc datei automatisieren?
-#- name: persistent xinetd config path helper script
-#  copy: src=patch-inc-php.sh dest=/opt/check_mk/bin/patch-inc-php.sh mode=0755 owner=root group=wheel
+- name: persistent xinetd config path helper script
+  copy: src=patch-inc-php.sh dest=/opt/check_mk/bin/patch-inc-php.sh mode=0755 owner=root group=wheel
 
 - name: persistent xinetd config check
-  script: patch-inc-php.sh
+  command: /opt/check_mk/bin/patch-inc-php.sh
+  register: patch_result
+  changed_when: "patch_result.stdout == 'config replaced'"
+  notify: reload filters
+
+#- name: persistent xinetd config check
+#  script: patch-inc-php.sh
