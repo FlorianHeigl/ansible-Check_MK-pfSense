@@ -5,7 +5,7 @@
 
 Automatically installs the __Check_MK__ agent on a __pfSense__ firewall.
 
-The Playbook is based off 'the' pfSense forum post (https://forum.pfsense.org/index.php?topic=111517.0#top) with some cleanups. We also use /opt but with a more FHS-compliant.
+The Playbook is based of 'the' pfSense forum post (https://forum.pfsense.org/index.php?topic=111517.0#top) with some cleanups. We also use /opt but with a more FHS-compliant.
 
 It also sets up a few extras: 
 
@@ -36,12 +36,16 @@ We set up ignore rules for some services
 
 ## Notes
 
+### filter reload
+
+in our experiene you will have to run a "filter reload" once after installing the playbook.  
+so far, we've not found a _reliable_ fix for that.
+
+
 ### no python2 interpreter symlink in 2.4.4 and up.
 
 Newer versions seem to not have a "default" python2. you can either change the setting in your inventory from
 'python2' to 'python2.7' or create a symlink.
-
-
 
 ### Connections
 
