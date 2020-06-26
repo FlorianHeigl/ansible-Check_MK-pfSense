@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [ -r /var/run/haproxy.stat ]; then
+        echo "<<<haproxy:sep(44)>>>"
+        echo "show stat" | socat unix-connect:/var/run/haproxy.stat stdio
+
+
+fi

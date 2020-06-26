@@ -1,4 +1,3 @@
-
 ---
 
 # losely after https://forum.pfsense.org/index.php?topic=111517.0
@@ -22,6 +21,29 @@
 
 - name: squidclient checker
   copy: src=squidclient dest=/opt/check_mk/lib/plugins/squidclient mode=0755 owner=root group=wheel
+
+- name: haproxy checker
+  copy: src=mk_haproxy dest=/opt/check_mk/lib/plugins/mk_haproxy mode=0755 owner=root group=wheel
+
+# ipmitool
+- name: ipmi support software
+  pkgng: name={{ item }} state=present
+  with_items:
+    - ipmitool
+    - openipmi
+# when: hardware?
+
+# kldload ipmi
+- name: enable loading of ipmi module
+  lineinfile:
+    line: 'ipmi_load="YES"'
+    regexp: '^ipmi_load='
+    dest: /boot/loader.conf.local
+    create: true
+  notify: load ipmi module
+# when: hardware?
+
+# fetch agent http://git.mathias-kettner.de/git/?p=check_mk.git;a=blob_plain;f=agents/check_mk_agent.freebsd;hb=HEAD
 
 # ipmitool
 - name: ipmi support software
