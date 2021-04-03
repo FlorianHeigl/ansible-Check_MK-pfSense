@@ -1,0 +1,6 @@
+#!/usr/local/bin/bash
+
+if type squidclient > /dev/null 2>&1 ; then
+   echo "<<<check_squid>>>"
+   timeout 10 squidclient -h 127.0.0.1 -p 3128 -T2 mgr:5min | grep =
+fi

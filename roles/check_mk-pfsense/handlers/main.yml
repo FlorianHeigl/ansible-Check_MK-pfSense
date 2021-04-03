@@ -7,3 +7,6 @@
 
 - name: install libstatgrab
   command: pkg add /opt/check_mk/libstatgrab-0.91.txz
+
+- name: reload filters
+  command: /etc/rc.filter_configure

@@ -5,31 +5,60 @@ https://github.com/deepthinkag/ansible-Check_MK-pfSense
 
 # Ansible Playbook for setting up Check_MK agent on pfSense
 
-Automatically installs the Check_MK agent on a pfSense firewall.
-Adds ipmi, libstatgrab (for amd64) and an update check
 
-based off 'the' pfSense forum post (https://forum.pfsense.org/index.php?topic=111517.0#top) with some cleanups. We also use /opt but with a more FHS-compliant
- vendor-path structure putting things under ```/opt/check_mk```. 
+## What it does
+
+Automatically installs the __Check_MK__ agent on a __pfSense__ firewall.
+
+The Playbook is based of 'the' pfSense forum post (https://forum.pfsense.org/index.php?topic=111517.0#top) with some cleanups. We also use /opt but with a more FHS-compliant.
+
+It also sets up a few extras: 
+
+* <ins>IPMI</ins> - interesting for achieving monitoring of the hardware sensors, and allows to use the hardware watchdog for less-than-rock-solid firewalls
+* <ins>pfSense updates</ins> - alerts with warning status if you need to update your firewall (also from forum or somewhere else, could not identify the source)
+* <ins>libstatgrab</ins> - needed for monitoring network devices (a amd64 package is included)
+* <ins>squidclient</ins> - Squid client check
 
 
+We adjusted the paths from the forum entry to a FHS-compliant structure including vendor path. That means we put things under ```/opt/check_mk```. 
+
+
+
+
+
+## Setup
+
+you need to initially install python27 i.e. using:
+```ansible -m shell -a "pkg install python27" my-firewall-hostname```
+
+you'll also need a firewall rule to allow connecting to port 6556! :-)
+
+We set up ignore rules for some services
+
+* NIC parameters for __lagg/vlan__
+* Whole Interfaces like __ix__
 
 
 ## Notes
 
-### Setup
+### filter reload
 
-you need to initially install python27 i.e. using:
-```ansible -m shell -a "pkg install python27" myfirewillhostname```
+in our experiene you will have to run a "filter reload" once after installing the playbook.  
+so far, we've not found a _reliable_ fix for that.
 
-you'll also need a firewall rule to allow connecting to port 6556! :-)
+
+### no python2 interpreter symlink in 2.4.4 and up.
+
+Newer versions seem to not have a "default" python2. you can either change the setting in your inventory from
+'python2' to 'python2.7' or create a symlink.
 
 ### Connections
 
-A connection using sshpass (-k) turned out to be extremely flaky.
-You are very much advised to store a key for connecting with Ansible.
+Once the connection using sshpass (-k) turned out to be extremely flaky.
+IF that happens, you are advised to store a key for connecting with Ansible.
 
 We normally also prefer to connect via SSH for Check_MK, that part is your choice. You can just disable the xinetd listener in that case.
-That's using ```disable = yes``` in ./roles/check_mk-pfsense/files/check_mk.inet
+That's using ```disable = yes``` in ```./roles/check_mk-pfsense/files/check_mk.inet```
 
 ### IPMI
 
@@ -37,4 +66,10 @@ Time constraints resulted in generally adding IPMI. It has no adverse effect on 
 
 
 ### The path
-/opt/MK would be correct, but we can't do that
+/opt/MK would be correct, but we can't do that :-)
+
+
+## Contributions
+
+Please, go ahead, there's still many things that could be improved for pfSense monitoring.
+Let us know about missing docs, too.

@@ -1,4 +1,3 @@
-
 ---
 
 # losely after https://forum.pfsense.org/index.php?topic=111517.0
@@ -13,12 +12,18 @@
   with_items: ['/opt/check_mk/bin', '/opt/check_mk/etc/xinetd.d' ]
 - name: extension dirs
   file: path={{ item }} state=directory
-  with_items: ['/opt/check_mk/lib/plugins', '/opt/check_mk/lib/local/3600', '/opt/check_mk/lib/plugins/3600' ]
+  with_items: ['/opt/check_mk/lib/local/3600', '/opt/check_mk/lib/plugins/3600' ]
 
 
 # plugin fuer updates mit 3600 subdir
 - name: update checker
-  copy: src=pfsense-updates.php dest=/opt/check_mk/lib/local/3600 mode=0755 owner=root group=wheel
+  copy: src=pfsense-updates.php dest=/opt/check_mk/lib/local/3600/pfsense-updates.php mode=0755 owner=root group=wheel
+
+- name: squidclient checker
+  copy: src=squidclient dest=/opt/check_mk/lib/plugins/squidclient mode=0755 owner=root group=wheel
+
+- name: haproxy checker
+  copy: src=mk_haproxy dest=/opt/check_mk/lib/plugins/mk_haproxy mode=0755 owner=root group=wheel
 
 # ipmitool
 - name: ipmi support software
@@ -48,13 +53,18 @@
   copy: src=libstatgrab-0.91.txz dest=/opt/check_mk/libstatgrab-0.91.txz mode=0755 owner=root group=wheel
   notify: install libstatgrab
 
-
 - name: xinetd config
   copy: src=check_mk.inet   dest=/opt/check_mk/etc/xinetd.d/check_mk mode=0755 owner=root group=wheel
-  
+
 # patchen der filter.inc datei automatisieren?
-#- name: persistent xinetd config path helper script
-#  copy: src=patch-inc-php.sh dest=/opt/check_mk/bin/patch-inc-php.sh mode=0755 owner=root group=wheel
+- name: persistent xinetd config path helper script
+  copy: src=patch-inc-php.sh dest=/opt/check_mk/bin/patch-inc-php.sh mode=0755 owner=root group=wheel
 
 - name: persistent xinetd config check
-  script: patch-inc-php.sh
+  command: /opt/check_mk/bin/patch-inc-php.sh
+  register: patch_result
+  changed_when: "patch_result.stdout == 'config replaced'"
+  notify: reload filters
+
+#- name: persistent xinetd config check
+#  script: patch-inc-php.sh
